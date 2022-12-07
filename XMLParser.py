@@ -1,7 +1,3 @@
-import requests
-import json
-import sqlite3
-import bs4
 from urllib.request import urlopen
 import xml.etree.ElementTree as ET
 

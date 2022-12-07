@@ -1,8 +1,4 @@
-import json
-from decimal import Decimal
 import requests
-import time
-import datetime
 
 
 def historical_sales_scraper(product_id):
@@ -50,17 +46,24 @@ def historical_sales_scraper(product_id):
             historical_sales_list.append(dataList[i][15:-1])
 
 # Cards only have 3 variants, and AFAIK limited edition is mutually exclusive from 1st/Unlimited.
-# This deals with them logically and gets the appropriate values, but may cause issues down the line.
+# This deals with them logically and gets the appropriate values
+# 0s are added to pad the lists of single variant cards, to prevent out of range error in the SQL statements
+# and put in appropriate position.
     try:
         if (historical_sales_list[2] and historical_sales_list[5] == "Limited") or (historical_sales_list[2] and historical_sales_list[5] == "Unlimited") or (historical_sales_list[2] and historical_sales_list[5] == "1st Edition"):
-            historical_sales_week = [historical_sales_list[6], historical_sales_list[7], historical_sales_list[8]]
-            historical_sales_month = [historical_sales_list[30], historical_sales_list[31], historical_sales_list[32]]
-            historical_sales_3month = [historical_sales_list[87], historical_sales_list[88], historical_sales_list[89]]
+            historical_sales_week = [historical_sales_list[6], historical_sales_list[7], historical_sales_list[8], 0, 0]
+            historical_sales_month = [historical_sales_list[30], historical_sales_list[31], historical_sales_list[32], 0, 0]
+            historical_sales_3month = [historical_sales_list[87], historical_sales_list[88], historical_sales_list[89], 0, 0]
             historical_sales_list = historical_sales_week + historical_sales_month + historical_sales_3month
-        if (historical_sales_list[2] == "Unlimited" and historical_sales_list[4] == "1st Edition") or (historical_sales_list[2] == "1st Edition" and historical_sales_list[4] == "Unlimited"):
+        if historical_sales_list[2] == "1st Edition" and historical_sales_list[4] == "Unlimited":
             historical_sales_week = [historical_sales_list[10], historical_sales_list[11], historical_sales_list[12], historical_sales_list[13], historical_sales_list[14]]
             historical_sales_month = [historical_sales_list[50], historical_sales_list[51], historical_sales_list[52], historical_sales_list[53], historical_sales_list[54]]
             historical_sales_3month = [historical_sales_list[145], historical_sales_list[146], historical_sales_list[147], historical_sales_list[148], historical_sales_list[149]]
+            historical_sales_list = historical_sales_week + historical_sales_month + historical_sales_3month
+        if historical_sales_list[2] == "Unlimited" and historical_sales_list[4] == "1st Edition":
+            historical_sales_week = [historical_sales_list[10], historical_sales_list[13], historical_sales_list[14], historical_sales_list[11], historical_sales_list[12]]
+            historical_sales_month = [historical_sales_list[50], historical_sales_list[53], historical_sales_list[54], historical_sales_list[51], historical_sales_list[52]]
+            historical_sales_3month = [historical_sales_list[145], historical_sales_list[148], historical_sales_list[149], historical_sales_list[146], historical_sales_list[147]]
             historical_sales_list = historical_sales_week + historical_sales_month + historical_sales_3month
     except IndexError as e:
         print("There is an error:" + str(e))

@@ -36,7 +36,7 @@ def name_set_parser(product_id):
     setCode = [item for item in cardinfoList if item.startswith('"formattedAttributes"')]
     setCode = str(setCode)[35:-3]
     data_list = [cardName, setCode]
-    if cardinfoList[3] == '"productLineUrlName":"YuGiOh"' and cardinfoList[4] == '"productTypeName":"Cards"':
-        return data_list
-    else:
-        return "Not a valid card"
+    if (cardinfoList[3] != '"productLineUrlName":"YuGiOh"') or (cardinfoList[4] != '"productTypeName":"Cards"'):
+        data_list = 'Not a valid card'
+    return data_list
+

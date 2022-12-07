@@ -34,7 +34,7 @@ def latest_sales_parser(product_id):
     latest_sales_list.pop(0)
     latest_sales_list.pop(0)
 
-# Initialize lists
+# Initialize lists for card attributes.
     conditionList = []
     variantList = []
     languageList = []
@@ -44,41 +44,36 @@ def latest_sales_parser(product_id):
     shippingpriceList = []
     orderdateList = []
 
-    i = 0
+# Iterates through the request and adds data to them.
+    for i in range(0, len(latest_sales_list)):
+        if latest_sales_list[i].startswith('"data":[{"condition":'):
+            conditionList.append(latest_sales_list[22:-1])
 
-    # Iterates through the request and adds data to them.
-    while i < len(latest_sales_list):
-        z = latest_sales_list[i].split(":")
-        conditionList.append(z[len(z) - 1][1:-1])
+        if latest_sales_list[i].startswith('{"condition":'):
+            conditionList.append(latest_sales_list[14:-1])
 
-        z = latest_sales_list[i + 1].split(":")
-        variantList.append(z[len(z) - 1][1:-1])
+        if latest_sales_list[i].startswith('"variant":'):
+            variantList.append(latest_sales_list[i][11:-1])
 
-        z = latest_sales_list[i + 2].split(":")
-        languageList.append(z[len(z) - 1][1:-1])
+        if latest_sales_list[i].startswith('"language":'):
+            languageList.append(latest_sales_list[i][12:-1])
 
-        z = latest_sales_list[i + 3].split(":")
-        quantityList.append(z[len(z) - 1])
+        if latest_sales_list[i].startswith('"quantity":'):
+            quantityList.append(latest_sales_list[i][11:])
 
-        z = latest_sales_list[i + 4].split(":")
-        titleList.append(z[len(z) - 1][1:-1])
+        if latest_sales_list[i].startswith('"title":'):
+            titleList.append(latest_sales_list[i][9:-1])
 
-        z = latest_sales_list[i + 7].split(":")
-        purchasepriceList.append(z[len(z) - 1])
+        if latest_sales_list[i].startswith('"purchasePrice":'):
+            purchasepriceList.append(latest_sales_list[i][16:])
 
-        z = latest_sales_list[i + 8].split(":")
-        shippingpriceList.append(z[len(z) - 1])
+        if latest_sales_list[i].startswith('"shippingPrice":'):
+            shippingpriceList.append(latest_sales_list[i][16:])
 
-        orderdateList.append(latest_sales_list[i + 9][13:-21])
+        if latest_sales_list[i].startswith('"orderDate":'):
+            orderdateList.append(latest_sales_list[i][13:-19])
 
-        i += 10
-
-    print(purchasepriceList)
-    print(conditionList)
-    print(variantList)
-    print(orderdateList)
-
-    # Initialize variables
+# Initialize variables
     average_priceFirst = 0
     average_priceUn = 0
     average_priceLi = 0
@@ -86,12 +81,12 @@ def latest_sales_parser(product_id):
     un_count = 0
     li_count = 0
 
-    # This get the average price of near mint and lightly played cards.
-    # Might need to have separate values for the conditions, and also maybe include lower quality cards.
-    # Might also need date added for daily values.
-    # 1st, unlimited, and limited editions are averaged and returned separately.
+# This get the average price of English versions of near mint and lightly played cards.
+# Might need to have separate values for the conditions, and also maybe include lower quality cards.
+# Might also need date added for daily values, as latest sales goes into previous days.
+# 1st, unlimited, and limited editions are averaged and returned separately.
     for j in range(0, len(purchasepriceList)):
-        if conditionList[j] == 'Near Mint' or 'Lightly Played':
+        if (conditionList[j] == 'Near Mint' or 'Lightly Played') and (languageList[j] == 'English'):
             if variantList[j] == '1st Edition':
                 average_priceFirst += Decimal(purchasepriceList[j])
                 first_count += 1
@@ -103,11 +98,15 @@ def latest_sales_parser(product_id):
                 li_count += 1
 
 # Average calculation is not required if the count is 0, also prevents divide by 0 error.
+# Rounding and data types may need to be adjusted for more accurate pricing
     if first_count != 0:
         average_priceFirst = average_priceFirst / first_count
+        average_priceFirst = round(average_priceFirst, 2)
     if un_count != 0:
         average_priceUn = average_priceUn / un_count
+        average_priceUn = round(average_priceUn, 2)
     if li_count != 0:
         average_priceLi = average_priceLi / li_count
+        average_priceLi = round(average_priceLi, 2)
     latest_sales = [average_priceFirst, average_priceUn, average_priceLi]
     return latest_sales
