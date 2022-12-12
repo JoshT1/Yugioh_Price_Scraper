@@ -1,9 +1,9 @@
 import requests
 
 
-def name_set_parser(product_id):
+def name_set_scraper(card_list):
     # Request Card Info via a GET method to TCGPlayer API
-    url = "https://mpapi.tcgplayer.com/v2/product/" + product_id + "/details"
+    url = "https://mpapi.tcgplayer.com/v2/product/" + card_list[0].product_id + "/details"
 
     payload = {}
     headers = \
@@ -28,15 +28,17 @@ def name_set_parser(product_id):
     # Parse Card Data
     cardinfoList = response.text.split(",")
 
-    # Acquire and Parse Card Name
-    cardName = [item for item in cardinfoList if item.startswith('"productUrlName"')]
-    cardName = str(cardName)[20:-3]
+    if (cardinfoList[3] == '"productLineUrlName":"YuGiOh"') and (cardinfoList[4] == '"productTypeName":"Cards"'):
+        card_list[0].set_is_card()
+        # Acquire and Parse Card Name
+        cardName = [item for item in cardinfoList if item.startswith('"productUrlName"')]
+        card_list[0].set_name(str(cardName)[20:-3])
+        card_list[1].set_name(str(cardName)[20:-3])
+        card_list[2].set_name(str(cardName)[20:-3])
 
-    # Acquire and Parse Set Code
-    setCode = [item for item in cardinfoList if item.startswith('"formattedAttributes"')]
-    setCode = str(setCode)[35:-3]
-    data_list = [cardName, setCode]
-    if (cardinfoList[3] != '"productLineUrlName":"YuGiOh"') or (cardinfoList[4] != '"productTypeName":"Cards"'):
-        data_list = 'Not a valid card'
-    return data_list
-
+        # Acquire and Parse Set Code
+        setCode = [item for item in cardinfoList if item.startswith('"formattedAttributes"')]
+        card_list[0].set_set_code(str(setCode)[35:-3])
+        card_list[1].set_set_code(str(setCode)[35:-3])
+        card_list[2].set_set_code(str(setCode)[35:-3])
+    return card_list

@@ -4,8 +4,8 @@ import requests
 
 
 # Needs some work done on the average prices!
-def latest_sales_parser(product_id):
-    url = "https://mpapi.tcgplayer.com/v2/product/" + product_id + "/latestsales"
+def latest_sales_scraper(card_list):
+    url = "https://mpapi.tcgplayer.com/v2/product/" + card_list[0].product_id + "/latestsales"
 
     payload = json.dumps({})
     headers = {
@@ -88,25 +88,24 @@ def latest_sales_parser(product_id):
     for j in range(0, len(purchasepriceList)):
         if (conditionList[j] == 'Near Mint' or 'Lightly Played') and (languageList[j] == 'English'):
             if variantList[j] == '1st Edition':
-                average_priceFirst += Decimal(purchasepriceList[j])
+                average_priceFirst += Decimal(purchasepriceList[j]) + Decimal(shippingpriceList[j])
                 first_count += 1
             if variantList[j] == 'Unlimited':
-                average_priceUn += Decimal(purchasepriceList[j])
+                average_priceUn += Decimal(purchasepriceList[j]) + Decimal(shippingpriceList[j])
                 un_count += 1
             if variantList[j] == 'Limited':
-                average_priceLi += Decimal(purchasepriceList[j])
+                average_priceLi += Decimal(purchasepriceList[j]) + Decimal(shippingpriceList[j])
                 li_count += 1
 
 # Average calculation is not required if the count is 0, also prevents divide by 0 error.
 # Rounding and data types may need to be adjusted for more accurate pricing
     if first_count != 0:
         average_priceFirst = average_priceFirst / first_count
-        average_priceFirst = round(average_priceFirst, 2)
+        card_list[0].set_current_price(round(average_priceFirst, 2))
     if un_count != 0:
         average_priceUn = average_priceUn / un_count
-        average_priceUn = round(average_priceUn, 2)
+        card_list[1].set_current_price(round(average_priceUn, 2))
     if li_count != 0:
         average_priceLi = average_priceLi / li_count
-        average_priceLi = round(average_priceLi, 2)
-    latest_sales = [average_priceFirst, average_priceUn, average_priceLi]
-    return latest_sales
+        card_list[2].set_current_price(round(average_priceLi, 2))
+    return card_list
