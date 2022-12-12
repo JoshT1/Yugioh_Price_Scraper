@@ -47,7 +47,7 @@ def historical_sales_scraper(card_list):
 
 # Cards only have 3 variants, and this logic is assuming limited edition is mutually exclusive from 1st/Unlimited.
 # This deals with them logically and gets the appropriate values and adds them to a card object.
-# TO DO: Add
+# TO DO: Some cards have 0 sales at exactly 1 month and 3 months, some dates aren't accurate. Need to fix this.
     try:
         if historical_sales_list[2] and historical_sales_list[5] == "1st Edition":
             card_list[0].set_week_price(historical_sales_list[7])
