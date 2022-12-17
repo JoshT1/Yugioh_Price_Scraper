@@ -4,6 +4,6 @@ Card name, set code, product ID, current price, week price, month price, and 3 m
 
 main.py runs the main loop for parsing cards
 with  historical_sales_scraper.py, latest_sales_scraper.py, name_set_scraper.py, sql_insert.py, and xml_parser.py
-being functions to get specific data.
+being functions to get specific data, or insert statements for SQLite.
 
 all the card data is temporarily stored in a card object, defined in card.py.
