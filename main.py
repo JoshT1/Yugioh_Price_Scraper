@@ -9,9 +9,6 @@ from sql_insert import sql_insert
 from xml_parser import xml_parser
 import card
 
-
-
-
 if __name__ == '__main__':
     '''
     The purpose of this program is to get card pricing data from TCGPlayer.com.
@@ -39,7 +36,7 @@ if __name__ == '__main__':
     (
     Card_Name VARCHAR(255) NOT NULL,
     Set_Code VARCHAR(255) NOT NULL,
-    Product_ID INT(1000000),
+    Product_ID INT(1000000) PRIMARY KEY,
     Current_Price DECIMAL(13,4),
     Week_Price DECIMAL(13,4),
     Month_Price DECIMAL(13,4),
@@ -55,7 +52,7 @@ if __name__ == '__main__':
     (
     Card_Name VARCHAR(255) NOT NULL,
     Set_Code VARCHAR(255) NOT NULL,
-    Product_ID INT(1000000),
+    Product_ID INT(1000000) PRIMARY KEY,
     Current_Price DECIMAL(13,4),
     Week_Price DECIMAL(13,4),
     Month_Price DECIMAL(13,4),
@@ -71,7 +68,7 @@ if __name__ == '__main__':
     (
     Card_Name VARCHAR(255) NOT NULL,
     Set_Code VARCHAR(255) NOT NULL,
-    Product_ID INT(1000000),
+    Product_ID INT(1000000) PRIMARY KEY,
     Current_Price DECIMAL(13,4),
     Week_Price DECIMAL(13,4),
     Month_Price DECIMAL(13,4),
@@ -86,7 +83,7 @@ if __name__ == '__main__':
 
     i = 0
 
-    while i < 100:
+    while i < 10:
         n = random.randint(0, len(list_id))
 
         # Initialize 3 card objects for each possible card edition, set the product ID
@@ -115,6 +112,8 @@ if __name__ == '__main__':
                 sql_insert("CARD_DATA_LI", card_list[2])
 
         i += 1
+        print(list_id[n])
+        print(i)
         print('waiting 10 seconds...')
         sleep(10)
 
@@ -134,5 +133,3 @@ if __name__ == '__main__':
     data = cursor.execute('''SELECT * FROM CARD_DATA_LI''')
     for row in data:
         print(row)
-
-

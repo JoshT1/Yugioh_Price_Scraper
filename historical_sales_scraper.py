@@ -82,6 +82,6 @@ def historical_sales_scraper(card_list):
 
     except IndexError as e:
         print("There is an error:" + str(e))
-        print(historical_sales_list)
+        print(dataList)
 
     return card_list
